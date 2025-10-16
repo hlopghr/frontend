@@ -59,9 +59,7 @@ const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [profileHover, setProfileHover] = useState(false);
-
+ 
   const navigate = useNavigate();
   const location = useLocation();
   const token = localStorage.getItem("hlopgToken");
@@ -132,18 +130,7 @@ const Header = () => {
     setMenuOpen(false);
   };
 
-  const handleLogout = () => {
-    if (isLoggedIn) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("hlopgUser");
-      localStorage.removeItem("hlopgOwner");
-      setIsLoggedIn(false);
-      navigate("/");
-    } else {
-      navigate("/RoleSelection");
-    }
-    setMenuOpen(false);
-  };
+
 
   const blackHeaderRoutes = [
     "/popup",
@@ -221,11 +208,7 @@ const Header = () => {
               Contact
             </Link>
           </li>
-          <li
-            className="auth-section"
-            onMouseEnter={() => setProfileHover(true)}
-            onMouseLeave={() => setProfileHover(false)}
-          >
+          <li className="auth-section">
             {!isLoggedIn ? (
               <button className="signup" onClick={handleRoleSelection}>
                 Login / SignUp
