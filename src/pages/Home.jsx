@@ -27,6 +27,7 @@ function Home() {
     Hyderabad: true,
     Chennai: true,
     Bangalore: true,
+    Mumbai : true,
   });
 
   const [cities, setCities] = useState([
