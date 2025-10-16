@@ -1,0 +1,329 @@
+/* Overlay */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+/* Main Container */
+.popup-container {
+  background: #fff;
+  border-radius: 14px;
+  padding: 30px 25px;
+  width: 70%;
+  max-width: 750px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  font-family: "Inter", sans-serif;
+  animation: popupScale 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Animation */
+@keyframes popupScale {
+  0% { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Close Button */
+.popup-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  cursor: pointer;
+  color: #333;
+  z-index: 10;
+}
+
+/* Title */
+.popup-title {
+  text-align: center;
+  font-size: 22px;
+  margin-bottom: 25px;
+  font-weight: 700;
+}
+
+/* Content Layout */
+.popup-body {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+/* Left Section */
+.popup-left {
+  flex: 1;
+  min-width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.pg-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.pg-sub {
+  font-size: 14px;
+  margin-bottom: 12px;
+  color: #555;
+}
+
+/* Main Image with arrows */
+.pg-image-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pg-image img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.main-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.4);
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  font-size: 18px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 5;
+  transition: 0.2s;
+}
+.main-arrow:hover {
+  background: rgba(0,0,0,0.7);
+}
+.main-arrow.left { left: 8px; }
+.main-arrow.right { right: 8px; }
+
+/* Sharing Info */
+.sharing-info {
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 6px;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+/* Thumbnail Scroll */
+.image-thumbs-wrapper {
+  overflow-x: auto;
+  display: flex;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+.image-thumbs img {
+  width: 60px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: 0.2s;
+}
+.image-thumbs img.active-thumb {
+  border-color: #6b4eff;
+}
+
+/* Price Options */
+.price-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+.price-btn {
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background: #f7f7f7;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+}
+.price-btn:hover {
+  background: #e1e1e1;
+}
+.price-btn.active {
+  background: #6b4eff;
+  color: #fff;
+  border-color: #6b4eff;
+}
+
+/* Right Section */
+.popup-right {
+  flex: 1;
+  min-width: 240px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 22px;
+}
+
+.date-label {
+  font-size: 14px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* Custom Calendar Styling */
+.custom-calendar {
+  border: none !important;
+  margin-bottom: 18px;
+  font-size: 14px;
+}
+.custom-calendar .react-calendar__tile {
+  padding: 12px !important;
+  border-radius: 6px;
+}
+.custom-calendar .react-calendar__tile--active {
+  background: #6b4eff !important;
+  color: white !important;
+}
+.custom-calendar .react-calendar__navigation button {
+  color: #6b4eff;
+  font-weight: bold;
+}
+
+/* Payment Summary */
+.total-box {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 16px;
+  background: #7357ff38;
+}
+.total-box h4 {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+.total-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin: 6px 0;
+}
+.total-line.grand {
+  font-weight: 600;
+  font-size: 15px;
+  border-top: 1px solid #ccc;
+  padding-top: 8px;
+}
+
+/* Aadhaar Section */
+.aadhar-section {
+  display: flex;
+  gap: 16px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+.upload-box {
+  flex: 1;
+  min-width: 130px;
+  height: 110px;
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  cursor: pointer;
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+  transition: 0.2s;
+}
+.upload-box:hover {
+  background: #f5f5f5;
+}
+.upload-box img {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 10px;
+}
+.upload-box input { display: none; }
+
+/* Pay Button */
+.pay-btn {
+  width: 100%;
+  padding: 14px 0;
+  background: #6b4eff;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: 0.2s;
+}
+.pay-btn:hover {
+  background: #5432ff;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .popup-container {
+    width: 95%;
+    max-width: 95%;
+    padding: 20px;
+  }
+  
+  .popup-body {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .popup-left, .popup-right {
+    min-width: 100%;
+  }
+
+  .popup-title {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
+  .price-btn {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
+  .pay-btn {
+    font-size: 15px;
+    padding: 12px 0;
+  }
+
+  .aadhar-section {
+    gap: 12px;
+  }
+
+  .pg-image-wrapper .main-arrow {
+    padding: 4px 8px;
+    font-size: 16px;
+  }
+
+  .image-thumbs img {
+    width: 50px;
+    height: 35px;
+  }
+}
