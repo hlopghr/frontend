@@ -126,22 +126,38 @@ const HostelPage = () => {
     setIsPopupOpen(false);
     setShowPayment(true);
   };
- const handleBookNow = () => {
-    const userToken = localStorage.getItem("hlopgToken");
-    const ownerToken = localStorage.getItem("hlopgOwner");
+const handleBookNow = async () => {
+     try {
+    const token = localStorage.getItem("hlopgToken");
+    const owner = localStorage.getItem("hlopgOwner");
+    if (owner){
+        alert("Your Logged in as Hostel Owner Not Authorized to Book Hostel.");
+        return;
+    }
+    if (!token) {
+      alert("Please log in to continue booking.");
+       navigate("/StudentLogin", { state: { from: location.pathname } });
 
-    if (ownerToken) {
-      alert("You are Logged in as a Hostel owner so  cannot book a PG.");
-      return; 
+      return;
     }
 
-    if (userToken) {
-      // logged in as user → show popup
-      setIsPopupOpen(true);
+    // ✅ Verify token with backend before showing popup
+    const res = await api.get("/auth/verify", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (res.data.success) {
+      setIsPopupOpen(true); // only open popup if backend confirms
     } else {
-      // not logged in → redirect to student login
-      navigate("/StudentLogin", { state: { from: location.pathname } });
+      alert("You are not authorized to book rooms.");
     }
+  } catch (err) {
+    console.error("Auth verification failed:", err);
+    alert("Your session has expired or you are not authorized. Please log in again.");
+    localStorage.removeItem("token");
+     navigate("/StudentLogin", { state: { from: location.pathname } });
+
+  }
   };
   if (loading) return <div className="loading">Loading hostel details...</div>;
   if (!hostelData) return <div className="error">No hostel found.</div>;
