@@ -20,7 +20,10 @@ import OwnerSignup from "./components/OwnerSignup";
 import OwnerForgetPassword from "./components/OwnerForgetPassword";
 
 // City Hostel Pages
-import CityHostels from "./pages/cities/CityHostels";
+import HyderabadHostels from "./pages/cities/HyderabadHostels";
+import ChennaiHostels from "./pages/cities/ChennaiHostels";
+import MumbaiHostels from "./pages/cities/MumbaiHostels";
+import BangaloreHostels from "./pages/cities/BangaloreHostels";
 
 import UserProfile from "./pages/UserPanel";
 // Contact Page
@@ -45,9 +48,16 @@ function App() {
           <Route path="/popup" element={<Popup />} />
           <Route path="/RoleSelection" element={<RoleSelection />} />
 
- 
-        {/* City hostels route - reusable */}
-        <Route path="/:cityName" element={<CityHostels />} />
+
+
+
+
+
+          {/* City Hostel Pages */}
+          <Route path="/hyderabad" element={<HyderabadHostels />} />
+          <Route path="/chennai" element={<ChennaiHostels />} />
+          <Route path="/mumbai" element={<MumbaiHostels />} />
+          <Route path="/bangalore" element={<BangaloreHostels />} />
 
           {/* Student Auth */}
           <Route path="/StudentLogin" element={<StudentLogin />} />

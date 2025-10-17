@@ -1,4 +1,3 @@
-/* ================= Common City Page ================= */
 .city-page {
   font-family: "Inter", sans-serif;
   color: #000;
@@ -86,7 +85,7 @@
   box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
 }
 
-/* -------- Option Styling -------- */
+/* -------- Option Styling (Browser-Safe Trick) -------- */
 .area-gender-filter select option {
   background-color: #fff;
   color: #333;
@@ -94,13 +93,14 @@
   padding: 10px;
 }
 
+/* Works in most modern browsers */
 .area-gender-filter select option:hover,
 .area-gender-filter select option:checked {
   background-color: #f0f7ff;
   color: #007bff;
 }
 
-/* ================= PG Grid (For City Pages) ================= */
+/* ================= PG Grid ================= */
 .pg-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -108,7 +108,6 @@
   padding: 60px 8%;
 }
 
-/* ================= PG Card (Common) ================= */
 .pg-card {
   background: #fff;
   border-radius: 18px;
@@ -168,10 +167,6 @@
   margin: 4px 0;
   color: #555;
   font-size: 0.9rem;
-}
-
-.pg-info .gender {
-  font-weight: 500;
 }
 
 .rating {
