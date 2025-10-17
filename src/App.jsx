@@ -32,7 +32,8 @@ function App() {
       {/* Global Header */}
       <Header />
 
-      {/* Main Content */}
+      {/* Main Content */}      {/* Main Content */}
+
       <main className="content">
         <Routes>
           {/* Public Pages */}
