@@ -38,7 +38,7 @@ function Home() {
   useEffect(() => {
     const CACHE_KEY = "citiesData";
     const CACHE_TIME_KEY = "citiesDataTimestamp";
-    const CACHE_DURATION = 1000 * 60 * 60; // 1 hour
+    const CACHE_DURATION = 1000 * 60 * 5; // 1 hour
 
     const cachedData = localStorage.getItem(CACHE_KEY);
     const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
