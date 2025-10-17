@@ -58,9 +58,7 @@ const Header = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [scrolled, setScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [profileHover, setProfileHover] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); 
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -223,8 +221,7 @@ const Header = () => {
           </li>
           <li
             className="auth-section"
-            onMouseEnter={() => setProfileHover(true)}
-            onMouseLeave={() => setProfileHover(false)}
+        
           >
             {!isLoggedIn ? (
               <button className="signup" onClick={handleRoleSelection}>
