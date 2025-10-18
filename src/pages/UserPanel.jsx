@@ -130,14 +130,9 @@ const UserPanel = ({ user: initialUser, onSave, onLogout }) => {
     if (e.target.classList.contains("modal-overlay")) closeLogoutModal();
   };
 
-  const handleEscKey = (e) => {
-    if (e.key === "Escape" && showLogoutModal) closeLogoutModal();
-  };
+ 
 
-  useEffect(() => {
-    window.addEventListener("keydown", handleEscKey);
-    return () => window.removeEventListener("keydown", handleEscKey);
-  }, [showLogoutModal]);
+  
 
   const handlePasswordChange = (field, value) => {
     setPasswords({ ...passwords, [field]: value });
