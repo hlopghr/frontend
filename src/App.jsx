@@ -69,8 +69,8 @@ function App() {
           <Route path="/owner-forgot-password" element={<OwnerForgetPassword />} />
 
 
-          <Route path="/user-profile" element={<UserProfile />} />
-          <Route path="/owner-profile" element={<h2>Owner Profile</h2>} />
+          <Route path="/user-dashboard" element={<UserProfile />} />
+          <Route path="/owner-dashboard" element={<h2>Owner Profile</h2>} />
 
         </Routes>
       </main>

@@ -14,9 +14,9 @@ const RoleSelection = () => {
     const owner = localStorage.getItem("hlopgOwner");
 
     if (token && user) {
-      navigate("/studentdashboard");
+      navigate("/user-dashboard");
     } else if (token && owner) {
-      navigate("/ownerdashboard");
+      navigate("/owner-dashboard");
     }
   }, [navigate]);
 

@@ -130,18 +130,7 @@ const Header = () => {
     setMenuOpen(false);
   };
 
-  const handleLogout = () => {
-    if (isLoggedIn) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("hlopgUser");
-      localStorage.removeItem("hlopgOwner");
-      setIsLoggedIn(false);
-      navigate("/");
-    } else {
-      navigate("/RoleSelection");
-    }
-    setMenuOpen(false);
-  };
+   
 
   const blackHeaderRoutes = [
     "/popup",
@@ -233,9 +222,9 @@ const Header = () => {
                   className="profile-icon"
                   onClick={() => { 
                   if (user) {
-                    navigate("/user-profile");
+                    navigate("/user-dashboard");
                   } else if (owner) {
-                    navigate("/owner-profile");
+                    navigate("/owner-dashboard");
                   } else {
                     navigate("/RoleSelection");
                   }

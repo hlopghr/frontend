@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./UserPanel.css";
 import { FaPlus, FaTimes, FaEye, FaEyeSlash } from "react-icons/fa";
+import api from "../api";
 
 const UserPanel = ({ user: initialUser, onSave, onLogout }) => {
   const [activeSection, setActiveSection] = useState("basic-info");
@@ -25,6 +27,39 @@ const UserPanel = ({ user: initialUser, onSave, onLogout }) => {
   });
 
   const [confirmValid, setConfirmValid] = useState(true);
+  const navigate = useNavigate();
+
+  // Token check simplified: redirect if no token
+  useEffect(() => {
+ const verifyToken = async () => {
+    const token = localStorage.getItem("hlopgToken");
+    if (!token) {
+      navigate("/RoleSelection");
+      return; // 🚨 This is the problem
+    }
+
+    try {
+      const res = await api.get("/auth/verify", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.status === 200) {
+      return;
+      } else {
+        throw new Error("Invalid token");
+      }
+    } catch (err) {
+      console.error("Token verification failed:", err);
+      localStorage.removeItem("hlopgToken");
+      localStorage.removeItem("hlopgUser");
+      localStorage.removeItem("hlopgOwner");
+
+      navigate("/RoleSelection");
+    }
+  };
+
+  verifyToken();
+}, [navigate]); 
 
   const handleProfileChange = (e) => {
     const file = e.target.files[0];
@@ -84,6 +119,10 @@ const UserPanel = ({ user: initialUser, onSave, onLogout }) => {
 
   const handleLogout = () => {
     if (onLogout) onLogout();
+    localStorage.removeItem("hlopgToken");
+    localStorage.removeItem("hlopgUser");
+    localStorage.removeItem("hlopgOwner");
+    navigate("/");
     closeLogoutModal();
   };
 
@@ -100,7 +139,6 @@ const UserPanel = ({ user: initialUser, onSave, onLogout }) => {
     return () => window.removeEventListener("keydown", handleEscKey);
   }, [showLogoutModal]);
 
-  // Password validation
   const handlePasswordChange = (field, value) => {
     setPasswords({ ...passwords, [field]: value });
     if (field === "new") {
@@ -110,7 +148,6 @@ const UserPanel = ({ user: initialUser, onSave, onLogout }) => {
         number: /\d/.test(value),
         symbol: /[^a-zA-Z0-9]/.test(value),
       });
-      // Also check confirm password match on new password change
       setConfirmValid(value === passwords.confirm || passwords.confirm === "");
     } else if (field === "confirm") {
       setConfirmValid(value === passwords.new);
@@ -136,11 +173,13 @@ const UserPanel = ({ user: initialUser, onSave, onLogout }) => {
               </div>
 
               <div className="info-form">
-                {[{ label: "Name", field: "name", type: "text" },
+                {[
+                  { label: "Name", field: "name", type: "text" },
                   { label: "Email", field: "email", type: "email" },
                   { label: "Mobile Number", field: "mobile", type: "text" },
                   { label: "Gender", field: "gender", type: "text" },
-                  { label: "City", field: "city", type: "text" }].map((f, idx) => (
+                  { label: "City", field: "city", type: "text" },
+                ].map((f, idx) => (
                   <div className="form-group" key={idx}>
                     <label>{f.label}</label>
                     <input
@@ -184,9 +223,9 @@ const UserPanel = ({ user: initialUser, onSave, onLogout }) => {
           <>
             <h3>BOOKED PG’S LIST</h3>
             <div className="pg-list">
-              {user?.bookedPGs?.length ? user.bookedPGs.map((pg, idx) => (
-                <div className="pg-card" key={idx}>🏠 {pg}</div>
-              )) : <p>No booked PGs.</p>}
+              {user?.bookedPGs?.length ? (
+                user.bookedPGs.map((pg, idx) => <div className="pg-card" key={idx}>🏠 {pg}</div>)
+              ) : (<p>No booked PGs.</p>)}
             </div>
           </>
         );
@@ -196,9 +235,9 @@ const UserPanel = ({ user: initialUser, onSave, onLogout }) => {
           <>
             <h3>LIKED PG’S LIST</h3>
             <div className="pg-list">
-              {user?.likedPGs?.length ? user.likedPGs.map((pg, idx) => (
-                <div className="pg-card liked" key={idx}>❤️ {pg}</div>
-              )) : <p>No liked PGs.</p>}
+              {user?.likedPGs?.length ? (
+                user.likedPGs.map((pg, idx) => <div className="pg-card liked" key={idx}>❤️ {pg}</div>)
+              ) : (<p>No liked PGs.</p>)}
             </div>
           </>
         );
@@ -212,14 +251,18 @@ const UserPanel = ({ user: initialUser, onSave, onLogout }) => {
                 <tr><th>Date</th><th>PG Name</th><th>Amount</th><th>Status</th></tr>
               </thead>
               <tbody>
-                {user?.payments?.length ? user.payments.map((p, idx) => (
-                  <tr key={idx}>
-                    <td>{p.date}</td>
-                    <td>{p.pgName}</td>
-                    <td>₹{p.amount}</td>
-                    <td>{p.status}</td>
-                  </tr>
-                )) : <tr><td colSpan="4" style={{ textAlign: "center" }}>No payments yet.</td></tr>}
+                {user?.payments?.length ? (
+                  user.payments.map((p, idx) => (
+                    <tr key={idx}>
+                      <td>{p.date}</td>
+                      <td>{p.pgName}</td>
+                      <td>₹{p.amount}</td>
+                      <td>{p.status}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr><td colSpan="4" style={{ textAlign: "center" }}>No payments yet.</td></tr>
+                )}
               </tbody>
             </table>
           </>
@@ -310,7 +353,10 @@ const UserPanel = ({ user: initialUser, onSave, onLogout }) => {
         <div className="sidebar">
           <div className={`sidebar-preview ${animateSidebar ? "fade-update" : ""}`}>
             <div className="sidebar-profile-image">
-              <img src={user.profileImage || "https://cdn-icons-png.flaticon.com/512/4140/4140048.png"} alt="Profile" />
+              <img
+                src={user.profileImage || "https://cdn-icons-png.flaticon.com/512/4140/4140048.png"}
+                alt="Profile"
+              />
             </div>
           </div>
 
@@ -318,17 +364,25 @@ const UserPanel = ({ user: initialUser, onSave, onLogout }) => {
             Hello, {user.name || "User"}!
           </div>
 
-          {[{ id: "basic-info", label: "Basic Information" },
+          {[
+            { id: "basic-info", label: "Basic Information" },
             { id: "booked-pg", label: "Booked PG’s List" },
             { id: "liked-pg", label: "Liked PG’s List" },
             { id: "payment-history", label: "Payment History" },
             { id: "change-password", label: "Change Password" },
-            { id: "terms", label: "Terms and Conditions" }].map((section) => (
-            <button key={section.id} className={activeSection === section.id ? "active" : ""} onClick={() => setActiveSection(section.id)}>
+            { id: "terms", label: "Terms and Conditions" },
+          ].map((section) => (
+            <button
+              key={section.id}
+              className={activeSection === section.id ? "active" : ""}
+              onClick={() => setActiveSection(section.id)}
+            >
               {section.label}
             </button>
           ))}
-          <button className="logout" onClick={openLogoutModal}>Logout</button>
+          <button className="logout" onClick={openLogoutModal}>
+            Logout
+          </button>
         </div>
 
         <div className="main-content">{renderSection()}</div>
