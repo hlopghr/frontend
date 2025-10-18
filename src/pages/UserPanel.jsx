@@ -4,10 +4,10 @@ import "./UserPanel.css";
 import { FaPlus, FaTimes, FaEye, FaEyeSlash } from "react-icons/fa";
 import api from "../api";
 
-const UserPanel = ({ user: initialUser, onSave, onLogout }) => {
+const UserPanel = ({ onSave, onLogout }) => {
   const [activeSection, setActiveSection] = useState("basic-info");
-  const [user, setUser] = useState({ ...initialUser });
-  const [draftUser, setDraftUser] = useState({ ...initialUser });
+  const [user, setUser] = useState({});
+  const [draftUser, setDraftUser] = useState({});
   const [message, setMessage] = useState("");
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [modalClosing, setModalClosing] = useState(false);
@@ -18,68 +18,74 @@ const UserPanel = ({ user: initialUser, onSave, onLogout }) => {
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [passwords, setPasswords] = useState({ current: "", new: "", confirm: "" });
-
   const [passwordRules, setPasswordRules] = useState({
     length: false,
     letter: false,
     number: false,
     symbol: false,
   });
-
   const [confirmValid, setConfirmValid] = useState(true);
+
   const navigate = useNavigate();
 
-  // Token check simplified: redirect if no token
+  // ✅ Verify token & fetch user details
   useEffect(() => {
- const verifyToken = async () => {
-    const token = localStorage.getItem("hlopgToken");
-    if (!token) {
-      navigate("/RoleSelection");
-      return; // 🚨 This is the problem
-    }
-
-    try {
-      const res = await api.get("/auth/verify", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (res.status === 200) {
-      return;
-      } else {
-        throw new Error("Invalid token");
+    const verifyAndFetchUser = async () => {
+      const token = localStorage.getItem("hlopgToken");
+      if (!token) {
+        navigate("/RoleSelection");
+        return;
       }
-    } catch (err) {
-      console.error("Token verification failed:", err);
-      localStorage.removeItem("hlopgToken");
-      localStorage.removeItem("hlopgUser");
-      localStorage.removeItem("hlopgOwner");
 
-      navigate("/RoleSelection");
-    }
-  };
+      try {
+        // Verify token
+        const verifyRes = await api.get("/auth/verify", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-  verifyToken();
-}, [navigate]); 
+        if (verifyRes.status === 200) {
+          // Token valid, fetch user
+          try {
+          const userRes = await api.get("/auth/me", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+            if (userRes.status === 200) {``
+              setUser(userRes.data);
+              setDraftUser(userRes.data);
+            } else {
+              alert("Failed to fetch user details.");
+            }
+          } catch (fetchErr) {
+            console.error("User fetch error:", fetchErr);
+            alert("Failed to fetch user details.");
+          }
+        } else {
+          throw new Error("Invalid token");
+        }
+      } catch (err) {
+        console.error("Token verification failed:", err);
+        localStorage.removeItem("hlopgToken");
+        localStorage.removeItem("hlopgUser");
+        localStorage.removeItem("hlopgOwner");
+        navigate("/RoleSelection");
+      }
+    };
+
+    verifyAndFetchUser();
+  }, [navigate]);
 
   const handleProfileChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setDraftUser({ ...draftUser, profileImage: url });
-    }
+    if (file) setDraftUser({ ...draftUser, profileImage: URL.createObjectURL(file) });
   };
 
   const handleAadhaarChange = (side, e) => {
     const file = e.target.files[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setDraftUser({ ...draftUser, [side]: url });
-    }
+    if (file) setDraftUser({ ...draftUser, [side]: URL.createObjectURL(file) });
   };
 
-  const handleInputChange = (field, value) => {
-    setDraftUser({ ...draftUser, [field]: value });
-  };
+  const handleInputChange = (field, value) => setDraftUser({ ...draftUser, [field]: value });
 
   const handleSaveChanges = () => {
     setUser({ ...draftUser });
@@ -130,12 +136,9 @@ const UserPanel = ({ user: initialUser, onSave, onLogout }) => {
     if (e.target.classList.contains("modal-overlay")) closeLogoutModal();
   };
 
- 
-
-  
-
   const handlePasswordChange = (field, value) => {
     setPasswords({ ...passwords, [field]: value });
+
     if (field === "new") {
       setPasswordRules({
         length: value.length >= 6,
@@ -171,17 +174,13 @@ const UserPanel = ({ user: initialUser, onSave, onLogout }) => {
                 {[
                   { label: "Name", field: "name", type: "text" },
                   { label: "Email", field: "email", type: "email" },
-                  { label: "Mobile Number", field: "mobile", type: "text" },
+                  { label: "Mobile Number", field: "phone", type: "text" },
                   { label: "Gender", field: "gender", type: "text" },
                   { label: "City", field: "city", type: "text" },
                 ].map((f, idx) => (
                   <div className="form-group" key={idx}>
                     <label>{f.label}</label>
-                    <input
-                      type={f.type}
-                      value={draftUser[f.field] || ""}
-                      onChange={(e) => handleInputChange(f.field, e.target.value)}
-                    />
+                    <input type={f.type} value={draftUser[f.field] || ""} onChange={(e) => handleInputChange(f.field, e.target.value)} />
                   </div>
                 ))}
 
@@ -242,9 +241,7 @@ const UserPanel = ({ user: initialUser, onSave, onLogout }) => {
           <>
             <h3>PAYMENT HISTORY</h3>
             <table className="payment-table">
-              <thead>
-                <tr><th>Date</th><th>PG Name</th><th>Amount</th><th>Status</th></tr>
-              </thead>
+              <thead><tr><th>Date</th><th>PG Name</th><th>Amount</th><th>Status</th></tr></thead>
               <tbody>
                 {user?.payments?.length ? (
                   user.payments.map((p, idx) => (
@@ -255,9 +252,7 @@ const UserPanel = ({ user: initialUser, onSave, onLogout }) => {
                       <td>{p.status}</td>
                     </tr>
                   ))
-                ) : (
-                  <tr><td colSpan="4" style={{ textAlign: "center" }}>No payments yet.</td></tr>
-                )}
+                ) : (<tr><td colSpan="4" style={{ textAlign: "center" }}>No payments yet.</td></tr>)}
               </tbody>
             </table>
           </>
@@ -268,58 +263,34 @@ const UserPanel = ({ user: initialUser, onSave, onLogout }) => {
           <>
             <h3>CHANGE PASSWORD</h3>
             <div className="password-form">
-              <div className="form-group password-group">
-                <label>Current Password</label>
-                <div className="password-input-wrapper">
-                  <input
-                    type={showCurrent ? "text" : "password"}
-                    placeholder="Enter current password"
-                    value={passwords.current}
-                    onChange={(e) => handlePasswordChange("current", e.target.value)}
-                  />
-                  <span onClick={() => setShowCurrent(!showCurrent)}>
-                    {showCurrent ? <FaEyeSlash /> : <FaEye />}
-                  </span>
+              {[
+                { label: "Current Password", field: "current", show: showCurrent, setShow: setShowCurrent },
+                { label: "New Password", field: "new", show: showNew, setShow: setShowNew },
+                { label: "Confirm Password", field: "confirm", show: showConfirm, setShow: setShowConfirm },
+              ].map((p, idx) => (
+                <div className="form-group password-group" key={idx}>
+                  <label>{p.label}</label>
+                  <div className="password-input-wrapper">
+                    <input
+                      type={p.show ? "text" : "password"}
+                      placeholder={`Enter ${p.label.toLowerCase()}`}
+                      value={passwords[p.field]}
+                      onChange={(e) => handlePasswordChange(p.field, e.target.value)}
+                      className={p.field === "confirm" && !confirmValid ? "invalid" : ""}
+                    />
+                    <span onClick={() => p.setShow(!p.show)}>
+                      {p.show ? <FaEyeSlash /> : <FaEye />}
+                    </span>
+                  </div>
+                  {p.field === "confirm" && !confirmValid && <p className="confirm-error">Passwords do not match</p>}
                 </div>
-              </div>
-
-              <div className="form-group password-group">
-                <label>New Password</label>
-                <div className="password-input-wrapper">
-                  <input
-                    type={showNew ? "text" : "password"}
-                    placeholder="Enter new password"
-                    value={passwords.new}
-                    onChange={(e) => handlePasswordChange("new", e.target.value)}
-                  />
-                  <span onClick={() => setShowNew(!showNew)}>
-                    {showNew ? <FaEyeSlash /> : <FaEye />}
-                  </span>
-                </div>
-              </div>
+              ))}
 
               <div className="password-rules">
                 <p className={passwordRules.length ? "valid" : ""}>• At least 6 characters</p>
                 <p className={passwordRules.letter ? "valid" : ""}>• Includes letters</p>
                 <p className={passwordRules.number ? "valid" : ""}>• Includes numbers</p>
                 <p className={passwordRules.symbol ? "valid" : ""}>• Includes symbols</p>
-              </div>
-
-              <div className="form-group password-group">
-                <label>Confirm Password</label>
-                <div className="password-input-wrapper">
-                  <input
-                    type={showConfirm ? "text" : "password"}
-                    placeholder="Re-enter new password"
-                    value={passwords.confirm}
-                    onChange={(e) => handlePasswordChange("confirm", e.target.value)}
-                    className={!confirmValid ? "invalid" : ""}
-                  />
-                  <span onClick={() => setShowConfirm(!showConfirm)}>
-                    {showConfirm ? <FaEyeSlash /> : <FaEye />}
-                  </span>
-                </div>
-                {!confirmValid && <p className="confirm-error">Passwords do not match</p>}
               </div>
 
               <button className="save-btn">Update Password</button>
@@ -375,9 +346,7 @@ const UserPanel = ({ user: initialUser, onSave, onLogout }) => {
               {section.label}
             </button>
           ))}
-          <button className="logout" onClick={openLogoutModal}>
-            Logout
-          </button>
+          <button className="logout" onClick={openLogoutModal}>Logout</button>
         </div>
 
         <div className="main-content">{renderSection()}</div>
